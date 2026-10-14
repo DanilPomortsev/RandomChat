@@ -31,21 +31,27 @@ import ru.yoomoney.tech.dbqueue.spring.dao.SpringDatabaseAccessLayer
 class DbQueueConfiguration {
     @Bean
     @ConditionalOnMissingBean
-    fun objectMapper(): ObjectMapper = jacksonObjectMapper().registerModule(JavaTimeModule())
+    fun objectMapper(): ObjectMapper {
+        return jacksonObjectMapper().registerModule(JavaTimeModule())
+    }
 
     @Bean
     fun queueDatabaseAccessLayer(
         jdbcTemplate: JdbcTemplate,
         transactionTemplate: TransactionTemplate,
-    ): SpringDatabaseAccessLayer = SpringDatabaseAccessLayer(
-        DatabaseDialect.POSTGRESQL,
-        QueueTableSchema.builder().build(),
-        jdbcTemplate,
-        transactionTemplate,
-    )
+    ): SpringDatabaseAccessLayer {
+        return SpringDatabaseAccessLayer(
+            DatabaseDialect.POSTGRESQL,
+            QueueTableSchema.builder().build(),
+            jdbcTemplate,
+            transactionTemplate,
+        )
+    }
 
     @Bean
-    fun queueShard(accessLayer: SpringDatabaseAccessLayer): QueueShard<SpringDatabaseAccessLayer> = QueueShard(QueueShardId("main"), accessLayer)
+    fun queueShard(accessLayer: SpringDatabaseAccessLayer): QueueShard<SpringDatabaseAccessLayer> {
+        return QueueShard(QueueShardId("main"), accessLayer)
+    }
 
     @Bean
     fun queueConfigs(): Map<QueueId, QueueConfig> {
@@ -78,7 +84,9 @@ class DbQueueConfiguration {
     fun dbQueueEnqueueService(
         queueProducers: QueueProducers,
         objectMapper: ObjectMapper,
-    ): DbQueueEnqueueService = DbQueueEnqueueService(queueProducers, objectMapper)
+    ): DbQueueEnqueueService {
+        return DbQueueEnqueueService(queueProducers, objectMapper)
+    }
 
     @Bean(destroyMethod = "shutdown")
     fun queueService(

@@ -15,9 +15,13 @@ abstract class JsonQueueConsumer<T : QueuePayload>(
     private val queueConfig = queueConfigs.getValue(QueueId(resolveQueueName(payloadType)))
     private val payloadTransformer = QueuePayloadTransformer(payloadType, objectMapper)
 
-    final override fun getQueueConfig(): QueueConfig = queueConfig
+    final override fun getQueueConfig(): QueueConfig {
+        return queueConfig
+    }
 
-    final override fun getPayloadTransformer(): TaskPayloadTransformer<T> = payloadTransformer
+    final override fun getPayloadTransformer(): TaskPayloadTransformer<T> {
+        return payloadTransformer
+    }
 
     @Suppress("UNCHECKED_CAST")
     private fun resolvePayloadType(): Class<T> {
@@ -28,9 +32,11 @@ abstract class JsonQueueConsumer<T : QueuePayload>(
         return superclass.actualTypeArguments[0] as Class<T>
     }
 
-    private fun resolveQueueName(type: Class<T>): String = runCatching {
-        type.getField("QUEUE_NAME").get(null) as String
-    }.getOrElse {
-        error("${type.simpleName} must declare companion const val QUEUE_NAME")
+    private fun resolveQueueName(type: Class<T>): String {
+        return runCatching {
+            type.getField("QUEUE_NAME").get(null) as String
+        }.getOrElse {
+            error("${type.simpleName} must declare companion const val QUEUE_NAME")
+        }
     }
 }

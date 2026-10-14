@@ -13,10 +13,12 @@ class AvatarRepository(
 ) : UserAvatarsDao(configuration) {
     private val dsl = configuration.dsl()
 
-    fun insert(userId: Long, url: String, status: AvatarStatus): UserAvatars = dsl.insertInto(USER_AVATARS)
-        .set(USER_AVATARS.USER_ID, userId)
-        .set(USER_AVATARS.URL, url)
-        .set(USER_AVATARS.STATUS, status)
-        .returning()
-        .fetchSingleInto(UserAvatars::class.java)
+    fun insert(userId: Long, url: String, status: AvatarStatus): UserAvatars {
+        return dsl.insertInto(USER_AVATARS)
+            .set(USER_AVATARS.USER_ID, userId)
+            .set(USER_AVATARS.URL, url)
+            .set(USER_AVATARS.STATUS, status)
+            .returning()
+            .fetchSingleInto(UserAvatars::class.java)
+    }
 }

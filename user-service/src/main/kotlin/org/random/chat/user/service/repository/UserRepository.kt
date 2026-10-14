@@ -8,8 +8,8 @@ import org.random.chat.user.service.domain.UserStatus
 import org.random.chat.user.service.jooq.tables.daos.UsersDao
 import org.random.chat.user.service.jooq.tables.pojos.UserAvatars
 import org.random.chat.user.service.jooq.tables.pojos.Users
-import org.random.chat.user.service.jooq.tables.references.USERS
 import org.random.chat.user.service.jooq.tables.references.USER_AVATARS
+import org.random.chat.user.service.jooq.tables.references.USERS
 import org.random.chat.user.service.model.UserInfo
 import org.springframework.stereotype.Repository
 
@@ -19,12 +19,14 @@ class UserRepository(
 ) : UsersDao(configuration) {
     private val dsl = configuration.dsl()
 
-    fun insert(email: String, nickname: String, status: UserStatus): Users = dsl.insertInto(USERS)
-        .set(USERS.EMAIL, email)
-        .set(USERS.NICKNAME, nickname)
-        .set(USERS.STATUS, status)
-        .returning()
-        .fetchSingleInto(Users::class.java)
+    fun insert(email: String, nickname: String, status: UserStatus): Users {
+        return dsl.insertInto(USERS)
+            .set(USERS.EMAIL, email)
+            .set(USERS.NICKNAME, nickname)
+            .set(USERS.STATUS, status)
+            .returning()
+            .fetchSingleInto(Users::class.java)
+    }
 
     fun findWithAvatars(id: Long): UserInfo? {
         val avatars = multiset(
