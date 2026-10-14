@@ -18,3 +18,4 @@ alwaysApply: true
 - Functions: block body with `return` only — no expression-body (`=`) functions.
 - Avoid redundant `checkNotNull`; prefer `!!` / APIs that already guarantee a value (`fetchSingleInto`, etc.).
 - Proto: domain messages/enums in their own files; service file keeps only the service + request/response.
+- CI: PR checks run ktlint (`ktlintCheck`) and full `test` (Postgres + Liquibase for jOOQ codegen, Testcontainers for IT).

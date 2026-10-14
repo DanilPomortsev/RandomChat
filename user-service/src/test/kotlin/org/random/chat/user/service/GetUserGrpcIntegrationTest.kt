@@ -14,15 +14,15 @@ import org.jooq.DSLContext
 import org.jooq.impl.DSL
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.random.chat.common.dbqueue.DbQueue
 import org.random.chat.user.api.GetUserRequest
 import org.random.chat.user.api.SaveUserRequest
 import org.random.chat.user.api.UserServiceGrpc.UserServiceBlockingStub
 import org.random.chat.user.api.UserStatus as ProtoUserStatus
 import org.random.chat.user.service.domain.AvatarStatus as DomainAvatarStatus
 import org.random.chat.user.service.domain.UserStatus
-import org.random.chat.user.service.jooq.tables.references.USER_AVATARS
 import org.random.chat.user.service.jooq.tables.references.USERS
-import org.random.chat.common.dbqueue.DbQueue
+import org.random.chat.user.service.jooq.tables.references.USER_AVATARS
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.grpc.test.autoconfigure.AutoConfigureTestGrpcTransport
 import org.springframework.boot.test.context.SpringBootTest
@@ -115,25 +115,23 @@ class GetUserGrpcIntegrationTest(
         error("Avatar $avatarId was not validated in time")
     }
 
-    private fun insertUser(email: String, nickname: String): Long =
-        checkNotNull(
-            dsl.insertInto(USERS)
-                .set(USERS.EMAIL, email)
-                .set(USERS.NICKNAME, nickname)
-                .set(USERS.STATUS, UserStatus.ACTIVE)
-                .returningResult(USERS.ID)
-                .fetchSingle(USERS.ID),
-        )
+    private fun insertUser(email: String, nickname: String): Long = checkNotNull(
+        dsl.insertInto(USERS)
+            .set(USERS.EMAIL, email)
+            .set(USERS.NICKNAME, nickname)
+            .set(USERS.STATUS, UserStatus.ACTIVE)
+            .returningResult(USERS.ID)
+            .fetchSingle(USERS.ID),
+    )
 
-    private fun insertAvatar(userId: Long, url: String, status: DomainAvatarStatus): Long =
-        checkNotNull(
-            dsl.insertInto(USER_AVATARS)
-                .set(USER_AVATARS.USER_ID, userId)
-                .set(USER_AVATARS.URL, url)
-                .set(USER_AVATARS.STATUS, status)
-                .returningResult(USER_AVATARS.ID)
-                .fetchSingle(USER_AVATARS.ID),
-        )
+    private fun insertAvatar(userId: Long, url: String, status: DomainAvatarStatus): Long = checkNotNull(
+        dsl.insertInto(USER_AVATARS)
+            .set(USER_AVATARS.USER_ID, userId)
+            .set(USER_AVATARS.URL, url)
+            .set(USER_AVATARS.STATUS, status)
+            .returningResult(USER_AVATARS.ID)
+            .fetchSingle(USER_AVATARS.ID),
+    )
 
     companion object {
         private val postgres = PostgreSQLContainer("postgres:17").apply { start() }

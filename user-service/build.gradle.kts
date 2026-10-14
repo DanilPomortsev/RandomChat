@@ -4,6 +4,7 @@ plugins {
     kotlin("jvm") version "2.3.21"
     kotlin("plugin.spring") version "2.3.21"
     id("org.jooq.jooq-codegen-gradle") version "3.21.7"
+    id("org.jlleitschuh.gradle.ktlint") version "14.2.0"
 }
 
 group = "org.random.chat.user.service"
@@ -42,13 +43,19 @@ kotlin {
     }
 }
 
+ktlint {
+    filter {
+        exclude { element -> element.file.path.contains("generated-src") }
+    }
+}
+
 jooq {
     configuration {
         jdbc {
             driver = "org.postgresql.Driver"
-            url = "jdbc:postgresql://localhost:5432/user_service"
-            user = "user_service_app"
-            password = "user_service_app"
+            url = System.getenv("JOOQ_JDBC_URL") ?: "jdbc:postgresql://localhost:5432/user_service"
+            user = System.getenv("JOOQ_JDBC_USER") ?: "user_service_app"
+            password = System.getenv("JOOQ_JDBC_PASSWORD") ?: "user_service_app"
         }
         generator {
             name = "org.jooq.codegen.KotlinGenerator"
@@ -108,17 +115,16 @@ tasks.test {
     }
 }
 
-fun resolveDockerHost(): String? =
-    runCatching {
-        val process = ProcessBuilder(
-            "docker",
-            "context",
-            "inspect",
-            "--format",
-            "{{.Endpoints.docker.Host}}",
-        ).redirectError(ProcessBuilder.Redirect.DISCARD).start()
-        if (process.waitFor() != 0) {
-            return null
-        }
-        process.inputStream.bufferedReader().readText().trim().ifBlank { null }
-    }.getOrNull()
+fun resolveDockerHost(): String? = runCatching {
+    val process = ProcessBuilder(
+        "docker",
+        "context",
+        "inspect",
+        "--format",
+        "{{.Endpoints.docker.Host}}",
+    ).redirectError(ProcessBuilder.Redirect.DISCARD).start()
+    if (process.waitFor() != 0) {
+        return null
+    }
+    process.inputStream.bufferedReader().readText().trim().ifBlank { null }
+}.getOrNull()
