@@ -1,0 +1,36 @@
+services:
+  postgres:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: user_service
+    ports:
+      - "5432:5432"
+    volumes:
+      - user_service_postgres:/var/lib/postgresql/data
+      - ./db/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d user_service"]
+      interval: 2s
+      timeout: 5s
+      retries: 20
+
+  liquibase:
+    build:
+      context: ./db
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      LIQUIBASE_COMMAND_URL: jdbc:postgresql://postgres:5432/user_service
+      LIQUIBASE_COMMAND_USERNAME: user_service_migrator
+      LIQUIBASE_COMMAND_PASSWORD: user_service_migrator
+      LIQUIBASE_COMMAND_CHANGELOG_FILE: db.changelog-master.yaml
+    volumes:
+      - ./db/changelog:/liquibase/changelog:ro
+    command: ["update"]
+    restart: "no"
+
+volumes:
+  user_service_postgres:

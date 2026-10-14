@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package user.v1;
+
+option java_multiple_files = true;
+option java_package = "org.random.chat.user.api";
+option java_outer_classname = "UserServiceProto";
+
+import "user.proto";
+
+service UserService {
+  rpc GetUser(GetUserRequest) returns (User);
+  rpc SaveUser(SaveUserRequest) returns (SaveUserResponse);
+}
+
+message GetUserRequest {
+  int64 id = 1;
+}
+
+message SaveUserRequest {
+  string email = 1;
+  string nickname = 2;
+  string avatar_url = 3;
+}
+
+message SaveUserResponse {
+  int64 id = 1;
+}

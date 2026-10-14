@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package user.v1;
+
+option java_multiple_files = true;
+option java_package = "org.random.chat.user.api";
+option java_outer_classname = "UserStatusProto";
+
+enum UserStatus {
+  USER_STATUS_UNSPECIFIED = 0;
+  USER_STATUS_ACTIVE = 1;
+  USER_STATUS_BLOCKED = 2;
+}

@@ -1,0 +1,20 @@
+---
+description: Coding style for Kotlin Spring services in random-chat
+alwaysApply: true
+---
+
+# Kotlin service style
+
+- Time: inject `Clock`, use `OffsetDateTime.now(clock)`. Never call bare `OffsetDateTime.now()`.
+- Timestamps on insert: do not set `createdAt` / `updatedAt` in code when the column has `DEFAULT now()`; let the DB fill them.
+- Timestamps on update: set `updatedAt` via `Clock`.
+- gRPC write handlers: return only what the client needs (e.g. created id), not the full aggregate.
+- Shared contracts: put `.proto` / API in a sibling `*-api` module; reusable infra (db-queue) in `common`.
+- Transactions: declare `TransactionTemplate` in a shared `TransactionConfig`, not inside feature configs.
+- db-queue: base in `common` — import `DbQueueConfiguration`; payloads implement `QueuePayload` with companion `QUEUE_NAME`; consumers extend `JsonQueueConsumer<T>` (type + queue name resolved from `T`); enqueue via `DbQueueEnqueueService`; config via `db-queue.properties`.
+- Persistence: extend jOOQ DAOs in repositories; prefer DAO/`insert`/`update` over raw DSL when enough.
+- Domain enums: UPPER_CASE Kotlin names; store lowercase DB values via converters.
+- Keep configs thin: one concern per `@Configuration` class (`TimeConfig`, `TransactionConfig`, `DbQueueConfig`, …).
+- Functions: block body with `return` only — no expression-body (`=`) functions.
+- Avoid redundant `checkNotNull`; prefer `!!` / APIs that already guarantee a value (`fetchSingleInto`, etc.).
+- Proto: domain messages/enums in their own files; service file keeps only the service + request/response.

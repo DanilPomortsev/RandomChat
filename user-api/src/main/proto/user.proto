@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package user.v1;
+
+option java_multiple_files = true;
+option java_package = "org.random.chat.user.api";
+option java_outer_classname = "UserProto";
+
+import "avatar.proto";
+import "user_status.proto";
+
+message User {
+  int64 id = 1;
+  string email = 2;
+  string nickname = 3;
+  UserStatus status = 4;
+  repeated Avatar avatars = 5;
+}

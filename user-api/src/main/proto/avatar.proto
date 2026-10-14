@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package user.v1;
+
+option java_multiple_files = true;
+option java_package = "org.random.chat.user.api";
+option java_outer_classname = "AvatarProto";
+
+message Avatar {
+  int64 id = 1;
+  string url = 2;
+}
