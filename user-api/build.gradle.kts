@@ -3,6 +3,7 @@ import com.google.protobuf.gradle.id
 plugins {
     kotlin("jvm") version "2.3.21"
     id("com.google.protobuf") version "0.10.0"
+    id("org.jlleitschuh.gradle.ktlint") version "14.2.0"
     `java-library`
 }
 
@@ -24,6 +25,12 @@ dependencies {
 
 kotlin {
     jvmToolchain(21)
+}
+
+ktlint {
+    filter {
+        exclude { element -> element.file.path.contains("/build/") }
+    }
 }
 
 protobuf {
